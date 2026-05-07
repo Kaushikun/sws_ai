@@ -1,4 +1,4 @@
-#Reads the lines in pdf
+#Reads the lines in pdf using langchain
 
 
 from langchain_community.document_loaders import PyMuPDFLoader
