@@ -1,0 +1,43 @@
+import json
+
+def ask(question, top_k=2):
+    """Query the vector store — no threshold blocking."""
+    results = vectorstore.similarity_search_with_score(question, k=top_k)
+
+    print(f'\n❓ Question: {question}')
+    print('─' * 60)
+
+    if not results:
+        print('❌ No results found in the documents.')
+        return
+
+    for i, (doc, score) in enumerate(results, 1):
+        print(f'\n[Result {i}] Score: {score:.3f}')
+        print(f'File  : {doc.metadata.get("source_file")}')
+        print(f'Page  : {doc.metadata.get("page")}')
+        print(f'Text  : {doc.page_content[:400]}')
+
+    # Only flag as irrelevant if score is very high
+    best_score = results[0][1]
+    if best_score > 1.8:
+        print('\n⚠️  Low confidence — answer may not be in the documents.')
+
+    # Save to JSON
+    output = {
+        'question': question,
+        'best_score': round(best_score, 3),
+        'results': [
+            {
+                'score': round(score, 3),
+                'source_file': doc.metadata.get('source_file'),
+                'page': doc.metadata.get('page'),
+                'text': doc.page_content
+            }
+            for doc, score in results
+        ]
+    }
+    with open('results.json', 'a') as f:
+        json.dump(output, f, indent=2)
+        f.write('\n')
+
+    print('\n💾 Saved to results.json')
