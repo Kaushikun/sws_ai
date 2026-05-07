@@ -1,7 +1,4 @@
-# ─────────────────────────────────────────
-# SINGLE CELL — Type Question & Get Answer
-# Run this cell → type question → click Ask
-# ─────────────────────────────────────────
+
 
 import json
 import ipywidgets as widgets
