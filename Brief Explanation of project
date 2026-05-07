@@ -1,0 +1,20 @@
+PDF Question Answering Chatbot using RAG
+
+Developed a Retrieval-Augmented Generation (RAG) based chatbot to answer questions from PDF documents using Claude LLM and LangChain. The project allows users to upload PDFs and interact with the content through a simple Streamlit interface.
+
+Technologies Used
+Python
+LangChain
+Claude LLM
+Streamlit
+ChromaDB (Vector Database)
+Project Workflow
+Uploaded and processed PDF documents.
+Extracted and split text into smaller chunks.
+Generated embeddings for the text data.
+Stored embeddings in ChromaDB for vector-based retrieval.
+Used LangChain retrieval pipeline with Claude LLM to generate accurate answers from the PDF content.
+Built an interactive UI using Streamlit.
+AI Tool Usage
+
+AI tools and online resources were used for learning concepts and understanding implementation details. The code was written and understood personally without directly copying complete implementations. Additional learning support was taken specifically for understanding ChromaDB vector storage concepts, as it was a new area of study.
