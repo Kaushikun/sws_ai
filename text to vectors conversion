@@ -1,0 +1,13 @@
+from langchain_huggingface import HuggingFaceEmbeddings
+
+print('🤗 Loading HuggingFace embedding model...')
+print('   (Downloads ~90MB on first run)')
+
+embeddings = HuggingFaceEmbeddings(
+    model_name='sentence-transformers/all-MiniLM-L6-v2'
+)
+
+
+test_vector = embeddings.embed_query('test')
+print(f'\n✅ Embedding model ready!')
+print(f'   Vector size: {len(test_vector)} dimensions')
