@@ -1,0 +1,96 @@
+# ─────────────────────────────────────────
+# SINGLE CELL — Type Question & Get Answer
+# Run this cell → type question → click Ask
+# ─────────────────────────────────────────
+
+import json
+import ipywidgets as widgets
+from IPython.display import display, HTML, clear_output
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+
+# Reload embeddings + vectorstore
+embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+vectorstore = Chroma(persist_directory='./chroma_db', embedding_function=embeddings)
+
+# ── Widgets ──
+text_input = widgets.Text(
+    placeholder='Type your question here...',
+    layout=widgets.Layout(width='70%')
+)
+ask_btn = widgets.Button(
+    description='Ask',
+    button_style='primary',
+    layout=widgets.Layout(width='80px')
+)
+clear_btn = widgets.Button(
+    description='Clear',
+    button_style='warning',
+    layout=widgets.Layout(width='80px')
+)
+output_area = widgets.Output()
+
+display(widgets.HBox([text_input, ask_btn, clear_btn]))
+display(output_area)
+
+# ── Ask function ──
+def ask(question, top_k=3):
+    results = vectorstore.similarity_search_with_score(question, k=top_k)
+
+    with output_area:
+        print(f'\n❓ Question: {question}')
+        print('─' * 60)
+
+        if not results:
+            print('❌ No results found in the documents.')
+            return
+
+        for i, (doc, score) in enumerate(results, 1):
+            print(f'\n[Result {i}] Score: {score:.3f}')
+            print(f'File  : {doc.metadata.get("source_file")}')
+            print(f'Page  : {doc.metadata.get("page")}')
+            print(f'Text  : {doc.page_content[:400]}')
+
+        if results[0][1] > 1.8:
+            print('\n⚠️  Low confidence — answer may not be in the documents.')
+
+        output = {
+            'question': question,
+            'results': [
+                {
+                    'score': round(s, 3),
+                    'source_file': d.metadata.get('source_file'),
+                    'page': d.metadata.get('page'),
+                    'text': d.page_content
+                }
+                for d, s in results
+            ]
+        }
+        with open('results.json', 'a') as f:
+            json.dump(output, f, indent=2)
+            f.write('\n')
+
+        print('\n💾 Saved to results.json')
+        print('\n' + '═' * 60)
+
+def on_ask(b):
+    q = text_input.value.strip()
+    if not q:
+        with output_area:
+            print('⚠️  Please type a question first.')
+        return
+    ask(q)
+    text_input.value = ''
+
+def on_clear(b):
+    output_area.clear_output()
+
+ask_btn.on_click(on_ask)
+clear_btn.on_click(on_clear)
+
+def on_enter(widget):
+    on_ask(None)
+
+text_input.on_submit(on_enter)
+
+print('✅ Ready! Type your question above and click Ask or press Enter.')
