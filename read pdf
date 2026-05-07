@@ -1,0 +1,14 @@
+
+import os
+from google.colab import files
+
+os.makedirs('pdfs', exist_ok=True)
+
+print('📂 Upload your PDF files below:')
+uploaded = files.upload()
+
+for filename, content in uploaded.items():
+    with open(f'pdfs/{filename}', 'wb') as f:
+        f.write(content)
+
+print(f'\n✅ {len(uploaded)} file(s) uploaded to pdfs/ folder')
