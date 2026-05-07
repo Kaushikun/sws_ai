@@ -1,0 +1,13 @@
+from langchain_chroma import Chroma
+
+print(f'🗄️  Embedding {len(chunks)} chunks into ChromaDB...')
+print('   Please wait...')
+
+vectorstore = Chroma.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory='./chroma_db'
+)
+
+print(f'\n✅ All chunks stored in ChromaDB!')
+print(f'   Saved to: ./chroma_db')
